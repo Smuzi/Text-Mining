@@ -29,7 +29,7 @@ def random_numbers(S,N):
 		Range[i] = num
 	return Range
 
-def kmean(X,k,criteria,initial_centroids=None):
+def kmean(X,k,initial_centroids=None):
 	
 	if initial_centroids==None:
 		#initial random seeds and centroids:
@@ -44,11 +44,11 @@ def kmean(X,k,criteria,initial_centroids=None):
 	#closest_cluster_id = reduced_clusters
 	#print closest_cluster_id!=reduced_clusters
 	#endadd
-	return kmean_body(X,closest_cluster_id,criteria)
+	return kmean_body(X,closest_cluster_id)
 	
 	
 
-def kmean_body(X,closest_cluster,criteria):
+def kmean_body(X,closest_cluster):
 	counter = 0
 	closest_cluster_prev = closest_cluster
 	while True:
@@ -58,13 +58,13 @@ def kmean_body(X,closest_cluster,criteria):
 		#added:
 		#closest_cluster_new = reduce_clusters(np.asarray(closest_cluster_new).reshape(-1))
 		#endadd
-		if counter>=20 or np.count_nonzero(closest_cluster_new != closest_cluster_prev) <= criteria*X.shape[0]:
+		if counter>=20 or np.count_nonzero(closest_cluster_new != closest_cluster_prev) <= 0.1 * X.shape[0]:
 			return closest_cluster_prev
 		closest_cluster_prev = closest_cluster_new
 		counter +=1
-def bipartite_clustering(D2W,word_cluster_num,doc_cluster_num,metric,criteria):
+def bipartite_clustering(D2W,word_cluster_num,doc_cluster_num,metric):
 	W2D = D2W.transpose()
-	W2WC = kmean(W2D,word_cluster_num,criteria)
+	W2WC = kmean(W2D,word_cluster_num)
 	#word_cluster_num = np.amax(W2WC)+1
 	#print "wc:",word_cluster_num
 	for loop in range(20):
@@ -76,10 +76,10 @@ def bipartite_clustering(D2W,word_cluster_num,doc_cluster_num,metric,criteria):
 		#print new_distance_matrix
 		D2WC = D2W.dot(new_distance_matrix)
 		if loop==0:
-			D2DC = kmean(D2WC,doc_cluster_num,criteria)
+			D2DC = kmean(D2WC,doc_cluster_num)
 		else:
 			new_centroids = get_new_centroids(D2WC,D2DC)
-			D2DC = kmean(D2WC,doc_cluster_num,criteria,new_centroids)
+			D2DC = kmean(D2WC,doc_cluster_num,new_centroids)
 		#doc_cluster_num = np.amax(D2DC)+1
 		#print "dc:",doc_cluster_num
 		new_centroids = get_new_centroids(D2W,D2DC)
@@ -87,7 +87,7 @@ def bipartite_clustering(D2W,word_cluster_num,doc_cluster_num,metric,criteria):
 		
 		W2DC = W2D.dot(new_distance_matrix)
 		new_centroids = get_new_centroids(W2DC,W2WC)
-		W2WC = kmean(W2DC,word_cluster_num,criteria,new_centroids)
+		W2WC = kmean(W2DC,word_cluster_num,new_centroids)
 		#word_cluster_num = np.amax(W2WC)+1
 		#print "wc:",word_cluster_num 
 	return D2DC,W2WC
@@ -102,7 +102,7 @@ def get_df(wordDF):
 		array_df.append(temp[1])
 	return np.asarray(array_df)
 
-def main(wc,dc,filename,docOutput,wordOutput,wordDF,criteria):
+def main(wc,dc,filename,docOutput,wordOutput,wordDF):
 	metric = 'cosine'
 	num_WC = wc
 	num_DC = dc
@@ -129,8 +129,8 @@ def main(wc,dc,filename,docOutput,wordOutput,wordDF,criteria):
 	
 	Doc2Word = csr_matrix((np.array(data).astype(float),(np.array(rows),np.array(cols))),shape=(number_of_documents,number_of_words),dtype=float)
 	Word2Doc = Doc2Word.transpose(copy=True)
-	Word2WordC,Doc2DocC = bipartite_clustering(Word2Doc,num_WC,num_DC,metric,criteria)
-	#Doc2DocC,Word2WordC = bipartite_clustering(Doc2Word,num_DC,num_WC,metric,criteria)
+	Doc2DocC,Word2WordC = bipartite_clustering(Doc2Word,num_DC,num_WC,metric)
+	#Word2WordC,Doc2DocC = bipartite_clustering(Word2Doc,num_WC,num_DC,metric)
 
 	DC_out = ['%i %i\n' % (doc_id, cluster_id) for doc_id, cluster_id in enumerate(Doc2DocC)]
 	WC_out = ['%i %i\n' % (doc_id, cluster_id) for doc_id, cluster_id in enumerate(Word2WordC)]
@@ -143,6 +143,7 @@ def main(wc,dc,filename,docOutput,wordOutput,wordDF,criteria):
 	output = {}
 	output['word_sum_cosine'] = normalize(Word2Doc).multiply(normalize(get_new_centroids(Word2Doc,Word2WordC))[Word2WordC]).sum()
 	output['doc_sum_cosine'] = normalize(Doc2Word).multiply(normalize(get_new_centroids(Doc2Word,Doc2DocC))[Doc2DocC]).sum()
+	#output['doc_F1'] = eval_macro_f1(DC_out,"C:\Smuzi\CMU\ML Txt mining\HW\HW2\data\HW2_dev.gold_standards")
 	print output
 	
 	return '0'

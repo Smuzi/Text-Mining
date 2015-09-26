@@ -1,0 +1,7 @@
+HW2_dev.rawText
+HW2_test.docVectors
+*.dict
+HW2_dev.docVectors
+HW2_dev.gold_standards
+*.df
+*.rawText

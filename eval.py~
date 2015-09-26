@@ -66,8 +66,6 @@ for goldCluster in goldClusters:
 
 		precision = tp / (tp+fp)
 		recall = tp / (tp+fn)
-		#print "precision:",precision
-		#print "recall:",recall
 		f1 = 2*precision*recall/(precision+recall)
 
 		if f1 > bestF1:
