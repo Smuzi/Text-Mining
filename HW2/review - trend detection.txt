@@ -1,0 +1,46 @@
+trend detection in social media
+
+good introduction and preview of subjects to be discussed.
+
+how do they recognize a trend and not just popular words?
+how do they recognize the trend in real-time?
+why only twitter and not general trend detection?
+japanese team- event detection and not just trend
+frequency of time stamp
+time-series!
+
+xiaoxu(the girl) didn't give enough time to read the slides.
+---------------------
+xiao(glasses &skinny) - talking to himself, not clear.
+
+number of tweets > threshold
+
+then adding authority weight (with relation to number of followers). 
+what about users that are less followed than others but still affect more people? - covered.
+not clear what nutrition and energy are - badly explained. (word aging)
+
+
+-----------------------
+quanua? (glasses&round) - better speaker
+
+group hot words together  - good examples.
+
+graph - and examples are good and effective.
+
+PCA,SVD metrics - explanation? never heard of it.
+
+specific elements in tweets - names/parties/places. 
+grapevine to conduct large scale data - what is that?
+
+links are important.
+!!!!what about hashtags???? - user defined trends! how can they improve detection
+
+
+--------------
+yan (tall&glasses) - also pretty good
+
+generate trends under different categories and then make trends more useful. 
+billboard only? why not find what trends interested you in the past?
+can trends appear in multiple categories??? the word mars can appear in science and in food for example.
+
+
