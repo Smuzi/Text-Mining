@@ -30,7 +30,6 @@ def random_numbers(S,N):
 	return Range
 
 def kmean(X,k,criteria,initial_centroids=None):
-	
 	if initial_centroids==None:
 		#initial random seeds and centroids:
 		seeds_number = random_numbers(k,X.shape[0]-1) 					#shape[0] returns number of rows
@@ -58,7 +57,7 @@ def kmean_body(X,closest_cluster,criteria):
 		#added:
 		#closest_cluster_new = reduce_clusters(np.asarray(closest_cluster_new).reshape(-1))
 		#endadd
-		if counter>=20 or np.count_nonzero(closest_cluster_new != closest_cluster_prev) <= criteria*X.shape[0]:
+		if counter>=5 or np.count_nonzero(closest_cluster_new != closest_cluster_prev) <= criteria*X.shape[0]:
 			return closest_cluster_prev
 		closest_cluster_prev = closest_cluster_new
 		counter +=1
@@ -67,7 +66,7 @@ def bipartite_clustering(D2W,word_cluster_num,doc_cluster_num,metric,criteria):
 	W2WC = kmean(W2D,word_cluster_num,criteria)
 	#word_cluster_num = np.amax(W2WC)+1
 	#print "wc:",word_cluster_num
-	for loop in range(20):
+	for loop in range(4):
 		#D2WC = D2W.dot(transform_from_index_array(W2WC,W2WC.size,word_cluster_num))
 		#print D2WC
 		#print loop
@@ -83,8 +82,7 @@ def bipartite_clustering(D2W,word_cluster_num,doc_cluster_num,metric,criteria):
 		#doc_cluster_num = np.amax(D2DC)+1
 		#print "dc:",doc_cluster_num
 		new_centroids = get_new_centroids(D2W,D2DC)
-		new_distance_matrix = pairwise_distances(D2W,new_centroids,metric=metric) #how to calculate distance? maybe 1-matrix?
-		
+		new_distance_matrix = pairwise_distances(D2W,new_centroids,metric=metric) 
 		W2DC = W2D.dot(new_distance_matrix)
 		new_centroids = get_new_centroids(W2DC,W2WC)
 		W2WC = kmean(W2DC,word_cluster_num,criteria,new_centroids)
